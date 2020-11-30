@@ -27,7 +27,7 @@ installbbr(){
 		yum remove -y kernel-headers
 		yum install -y http://${github}/bbr/${release}/${version}/${bit}/kernel-ml-headers-${kernel_version}.rpm
 		yum install -y http://${github}/bbr/${release}/${version}/${bit}/kernel-ml-devel-${kernel_version}.rpm
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+	elif [[ "${release}" == "debian" ]]; then
 		sed -i '$a deb http://security.debian.org/debian-security jessie/updates main' /etc/apt/sources.list
 		sed -i '$a deb http://ftp.de.debian.org/debian jessie main' /etc/apt/sources.list
 		apt update && apt install libssl1.0 -y
@@ -40,9 +40,22 @@ installbbr(){
 		dpkg -i linux-headers-${kernel_version}.deb
 		dpkg -i linux-image-${kernel_version}.deb
 		cd .. && rm -rf bbr
+	elif [[ "${release}" == "ubuntu" ]]; then
+		mkdir bbr && cd bbr
+		wget https://debian.sipwise.com/debian-security/pool/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u10_amd64.deb
+		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/linux-headers-${kernel_version}-all.deb
+		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/${bit}/linux-headers-${kernel_version}.deb
+		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/${bit}/linux-image-${kernel_version}.deb
+	
+		dpkg -i libssl1.0.0_1.0.1t-1+deb8u10_amd64.deb		
+		dpkg -i linux-headers-${kernel_version}-all.deb
+		dpkg -i linux-headers-${kernel_version}.deb
+		dpkg -i linux-image-${kernel_version}.deb
+		cd .. && rm -rf bbr
 	fi
-	detele_kernel
-	BBR_grub
+	test="Advanced options for Debian GNU/Linux, with Linux 4.11.8-041108-generic"	
+	#detele_kernel
+	#BBR_grub
 	echo -e "${Tip} 重启VPS后，请重新运行脚本开启${Red_font_prefix}BBR/BBR魔改版${Font_color_suffix}"
 	stty erase '^H' && read -p "需要重启VPS后，才能开启BBR/BBR魔改版，是否现在重启 ? [Y/n] :" yn
 	[ -z "${yn}" ] && yn="y"
