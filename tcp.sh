@@ -28,13 +28,14 @@ installbbr(){
 		yum install -y http://${github}/bbr/${release}/${version}/${bit}/kernel-ml-headers-${kernel_version}.rpm
 		yum install -y http://${github}/bbr/${release}/${version}/${bit}/kernel-ml-devel-${kernel_version}.rpm
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		sed -i '$a deb http://security.debian.org/debian-security jessie/updates main' /etc/apt/sources.list
+		sed -i '$a deb http://ftp.de.debian.org/debian jessie main' /etc/apt/sources.list
+		apt update && apt install libssl1.0 -y
 		mkdir bbr && cd bbr
-		wget http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u10_amd64.deb
 		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/linux-headers-${kernel_version}-all.deb
 		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/${bit}/linux-headers-${kernel_version}.deb
 		wget -N --no-check-certificate http://${github}/bbr/debian-ubuntu/${bit}/linux-image-${kernel_version}.deb
 	
-		dpkg -i libssl1.0.0_1.0.1t-1+deb8u10_amd64.deb
 		dpkg -i linux-headers-${kernel_version}-all.deb
 		dpkg -i linux-headers-${kernel_version}.deb
 		dpkg -i linux-image-${kernel_version}.deb
